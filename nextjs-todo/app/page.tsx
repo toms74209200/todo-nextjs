@@ -1,11 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 
+type Todo = {
+  title: string;
+  description?: string;
+  deadline?: Date;
+  completed: boolean;
+};
+
 type TodoCardProps = {
   title: string;
   description?: string;
   deadline?: Date;
-  compoleted?: boolean;
+  completed?: boolean;
 };
 
 const TodoCard = ({ title }: TodoCardProps) => {
@@ -17,13 +24,19 @@ const TodoCard = ({ title }: TodoCardProps) => {
 };
 
 export default function Home() {
-  const [todos, setTodos] = useState<string[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setTodos([...todos, inputValue]);
+    setTodos([
+      ...todos,
+      {
+        title: inputValue,
+        completed: false,
+      },
+    ]);
     setInputValue("");
   };
 
@@ -37,7 +50,7 @@ export default function Home() {
         <ul className="h-3/4">
           {todos.map((todo, index) => (
             <li key={index}>
-              <TodoCard title={todo} />
+              <TodoCard title={todo.title} />
             </li>
           ))}
         </ul>
