@@ -1,6 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
 
+type TodoCardProps = {
+  title: string;
+  description?: string;
+  deadline?: Date;
+  compoleted?: boolean;
+};
+
+const TodoCard = ({ title }: TodoCardProps) => {
+  return (
+    <div className="flex flex-col border rounded p-2 mb-2">
+      <h3 className="font-bold">{title}</h3>
+    </div>
+  );
+};
+
 export default function Home() {
   const [todos, setTodos] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -21,7 +36,9 @@ export default function Home() {
       <div className="flex flex-col justify-center max-w-md">
         <ul className="h-3/4">
           {todos.map((todo, index) => (
-            <li key={index}>{todo}</li>
+            <li key={index}>
+              <TodoCard title={todo} />
+            </li>
           ))}
         </ul>
 
