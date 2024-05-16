@@ -13,12 +13,29 @@ type TodoCardProps = {
   description?: string;
   deadline?: Date;
   completed?: boolean;
+  handleComplete?: () => void;
 };
 
-const TodoCard = ({ title }: TodoCardProps) => {
+const TodoCard = ({ title, completed, handleComplete }: TodoCardProps) => {
   return (
-    <div className="flex flex-col border rounded p-2 mb-2">
-      <h3 className="font-bold">{title}</h3>
+    <div
+      className={
+        "flex flex-col border rounded p-2 mb-2 " +
+        `${completed ? " bg-slate-300 " : ""}`
+      }
+    >
+      <div className="flex flex-row justify-between items-center">
+        <h3 className="font-bold">{title}</h3>
+        <button
+          className={
+            "p-1 text-slate-100 hover:text-black " +
+            `${completed ? "hidden" : ""}`
+          }
+          onClick={handleComplete}
+        >
+          ✔
+        </button>
+      </div>
     </div>
   );
 };
@@ -50,7 +67,15 @@ export default function Home() {
         <ul className="h-3/4">
           {todos.map((todo, index) => (
             <li key={index}>
-              <TodoCard title={todo.title} />
+              <TodoCard
+                title={todo.title}
+                completed={todo.completed}
+                handleComplete={() => {
+                  const newTodos = [...todos];
+                  newTodos[index].completed = true;
+                  setTodos(newTodos);
+                }}
+              />
             </li>
           ))}
         </ul>
