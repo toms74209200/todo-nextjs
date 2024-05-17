@@ -18,12 +18,7 @@ type TodoCardProps = {
 
 const TodoCard = ({ title, completed, handleComplete }: TodoCardProps) => {
   return (
-    <div
-      className={
-        "flex flex-col border rounded p-2 mb-2 " +
-        `${completed ? " bg-slate-300 " : ""}`
-      }
-    >
+    <div className={"flex flex-col border rounded p-2 mb-2 "}>
       <div className="flex flex-row justify-between items-center">
         <h3 className="font-bold">{title}</h3>
         <button
@@ -40,8 +35,11 @@ const TodoCard = ({ title, completed, handleComplete }: TodoCardProps) => {
   );
 };
 
+type ListViewState = "progress" | "completed";
+
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [viewState, setViewState] = useState<ListViewState>("progress");
   const [inputValue, setInputValue] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
 
@@ -64,20 +62,52 @@ export default function Home() {
   return (
     <main className="flex justify-center w-screen h-screen">
       <div className="flex flex-col justify-center max-w-md">
+        <div className="my-2 border-b">
+          <button
+            className={
+              "p-2 mx-2 rounded-s " +
+              `${
+                viewState === "progress"
+                  ? "bg-slate-50 border-b"
+                  : "text-gray-400"
+              }`
+            }
+            onClick={() => setViewState("progress")}
+          >
+            Progress
+          </button>
+          <button
+            className={
+              "p-2 mx-2 rounded-s " +
+              `${
+                viewState === "completed"
+                  ? "bg-slate-50 border-b"
+                  : "text-gray-400"
+              }`
+            }
+            onClick={() => setViewState("completed")}
+          >
+            Completed
+          </button>
+        </div>
         <ul className="h-3/4">
-          {todos.map((todo, index) => (
-            <li key={index}>
-              <TodoCard
-                title={todo.title}
-                completed={todo.completed}
-                handleComplete={() => {
-                  const newTodos = [...todos];
-                  newTodos[index].completed = true;
-                  setTodos(newTodos);
-                }}
-              />
-            </li>
-          ))}
+          {todos
+            .filter((todo) =>
+              viewState === "progress" ? !todo.completed : todo.completed
+            )
+            .map((todo, index) => (
+              <li key={index}>
+                <TodoCard
+                  title={todo.title}
+                  completed={todo.completed}
+                  handleComplete={() => {
+                    const newTodos = [...todos];
+                    newTodos[index].completed = true;
+                    setTodos(newTodos);
+                  }}
+                />
+              </li>
+            ))}
         </ul>
 
         <form className="flex flex-row m-4" onSubmit={handleSubmit}>
