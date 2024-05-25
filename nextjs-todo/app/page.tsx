@@ -65,23 +65,25 @@ export default function Home() {
           </button>
         </div>
         <ul className="h-3/4">
-          {todos
-            .filter((todo) =>
-              viewState === "progress" ? !todo.completed : todo.completed
-            )
-            .map((todo, index) => (
-              <li key={index}>
-                <TodoCard
-                  title={todo.title}
-                  completed={todo.completed}
-                  handleComplete={() => {
-                    const newTodos = [...todos];
-                    newTodos[index].completed = true;
-                    setTodos(newTodos);
-                  }}
-                />
-              </li>
-            ))}
+          {todos.map((todo, index) => (
+            <li key={index}>
+              <TodoCard
+                title={todo.title}
+                completed={todo.completed}
+                handleComplete={() => {
+                  const newTodos = todos.map((todoItem, todoIndex) =>
+                    todoIndex === index
+                      ? { ...todoItem, completed: true }
+                      : todoItem
+                  );
+                  setTodos(newTodos);
+                }}
+                hidden={
+                  viewState === "progress" ? todo.completed : !todo.completed
+                }
+              />
+            </li>
+          ))}
         </ul>
 
         <form className="flex flex-row m-4" onSubmit={handleSubmit}>

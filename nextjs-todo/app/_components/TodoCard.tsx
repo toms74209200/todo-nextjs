@@ -4,15 +4,21 @@ type TodoCardProps = {
   deadline?: Date;
   completed?: boolean;
   handleComplete?: () => void;
+  hidden?: boolean;
 };
 
 export const TodoCard = ({
   title,
   completed,
   handleComplete,
+  hidden,
 }: TodoCardProps) => {
   return (
-    <div className={"flex flex-col border rounded p-2 mb-2 "}>
+    <div
+      className={
+        "flex flex-col border rounded p-2 mb-2 " + `${hidden ? "hidden" : ""}`
+      }
+    >
       <div className="flex flex-row justify-between items-center">
         <h3 className="font-bold">{title}</h3>
         <button
