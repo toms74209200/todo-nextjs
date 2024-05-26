@@ -1,3 +1,5 @@
+import { MouseEvent, useCallback, useState } from "react";
+
 type TodoCardProps = {
   title: string;
   description?: string;
@@ -13,11 +15,48 @@ export const TodoCard = ({
   handleComplete,
   hidden,
 }: TodoCardProps) => {
+  const [startX, setStartX] = useState(0);
+  const [translateX, setTranslateX] = useState("");
+  const [dragging, setDragging] = useState(false);
+
+  const handleDragStart = useCallback((e: MouseEvent<HTMLElement>) => {
+    setStartX(e.screenX);
+    setDragging(true);
+  }, []);
+
+  const handleDrag = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      if (dragging) {
+        setTranslateX(`translateX(${e.screenX - startX}px)`);
+      }
+    },
+    [dragging, startX]
+  );
+
+  const handleDragEnd = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      if (e.clientX - startX > 50) {
+        handleComplete && handleComplete();
+      }
+
+      setDragging(false);
+      setStartX(0);
+      setTranslateX("");
+    },
+    [handleComplete, startX]
+  );
+
   return (
     <div
       className={
-        "flex flex-col border rounded p-2 mb-2 " + `${hidden ? "hidden" : ""}`
+        "flex flex-col border rounded p-2 mb-2 bg-white " +
+        `${hidden ? "hidden" : ""}`
       }
+      draggable={!completed}
+      onDragStart={handleDragStart}
+      onDrag={handleDrag}
+      onDragEnd={handleDragEnd}
+      style={{ transform: `${translateX}` }}
     >
       <div className="flex flex-row justify-between items-center">
         <h3 className="font-bold">{title}</h3>
