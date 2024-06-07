@@ -2,9 +2,10 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
 {
 	"name": "Bun",
-	"build": {
-		"dockerfile": "Dockerfile",
-	},
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "bun",
+	"runServices": ["firestore"],
+	"workspaceFolder": "/workspaces/nextjs-todo",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

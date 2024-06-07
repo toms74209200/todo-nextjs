@@ -1,0 +1,19 @@
+services:
+  bun:
+    build:
+      context: .
+    volumes:
+      - ../:/workspaces/nextjs-todo
+    command:  sleep infinity
+    environment:
+      - TZ=Asia/Tokyo
+
+  firestore:
+    image: motomotomato/firestore-emulator
+    ports:
+      - 8080:8080
+      - 4000:4000
+      - 9099:9099
+    volumes:
+      - ./firestore:/firestore
+    command: ["emulators:start", "--project", "nextjs-todo"]
