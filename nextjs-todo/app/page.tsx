@@ -1,13 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { TodoCard } from "./_components/TodoCard";
-
-type Todo = {
-  title: string;
-  description?: string;
-  deadline?: Date;
-  completed: boolean;
-};
+import { Todo } from "./_models/Todo";
 
 type ListViewState = "progress" | "completed";
 
