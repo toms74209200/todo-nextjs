@@ -1,31 +1,51 @@
 "use client";
-import { useEffect, useState } from "react";
-import { TodoCard } from "./_components/TodoCard";
-import { Todo } from "./_models/Todo";
+import { useContext, useEffect, useState } from "react";
+import { TodoCard } from "@/app/_components/TodoCard";
+import { Todo } from "@/app/_models/Todo";
+import { insertTodo } from "./_models/insertTodo";
+import { FirestoreContext } from "@/app/_components/FirestoreProvider";
 
 type ListViewState = "progress" | "completed";
 
 export default function Home() {
+  const firestore = useContext(FirestoreContext);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [viewState, setViewState] = useState<ListViewState>("progress");
   const [inputValue, setInputValue] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setTodos([
-      ...todos,
-      {
-        title: inputValue,
-        completed: false,
-      },
-    ]);
+  const instertTodoAction = async () => {
+    await insertTodo({
+      title: inputValue,
+      completed: false,
+    });
     setInputValue("");
   };
 
   useEffect(() => {
     setIsDisabled(inputValue === "");
   }, [inputValue]);
+
+  useEffect(() => {
+    const unsubscribe = firestore
+      .collection("todos")
+      .onSnapshot(async (snapshot) => {
+        const newTodos: Todo[] = snapshot.docs
+          .map((doc) => doc.data())
+          .map((data) => {
+            return {
+              title: data.title,
+              description: data.description,
+              deadline: data.deadline,
+              completed: data.completed,
+            };
+          });
+        setTodos(newTodos);
+      });
+    return () => {
+      unsubscribe();
+    };
+  }, [firestore]);
 
   return (
     <main className="flex justify-center w-screen h-screen">
@@ -80,7 +100,7 @@ export default function Home() {
           ))}
         </ul>
 
-        <form className="flex flex-row m-4" onSubmit={handleSubmit}>
+        <form className="flex flex-row m-4" action={instertTodoAction}>
           <input
             type="text"
             className={"border rounded px-2 bg-slate-50 focus:bg-white"}
