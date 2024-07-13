@@ -2,7 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import { TodoCard } from "@/app/_components/TodoCard";
 import { Todo } from "@/app/_models/Todo";
-import { insertTodo } from "./_models/insertTodo";
+import { insertTodo } from "@/app/_models/insertTodo";
 import { FirestoreContext } from "@/app/_components/FirestoreProvider";
 
 type ListViewState = "progress" | "completed";
@@ -34,12 +34,13 @@ export default function Home() {
           .map((doc) => doc.data())
           .map((data) => {
             return {
-              title: data.title,
-              description: data.description,
-              deadline: data.deadline,
-              completed: data.completed,
-            };
-          });
+            id: doc.id,
+            title: doc.data().title,
+            description: doc.data().description,
+            deadline: doc.data().deadline,
+            completed: doc.data().completed,
+          };
+        });
         setTodos(newTodos);
       });
     return () => {
