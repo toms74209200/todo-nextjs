@@ -4,6 +4,7 @@ import { TodoCard } from "@/app/_components/TodoCard";
 import { Todo } from "@/app/_models/Todo";
 import { insertTodo } from "@/app/_models/insertTodo";
 import { FirestoreContext } from "@/app/_components/FirestoreProvider";
+import { updateTodo } from "@/app/_models/updateTodo";
 
 type ListViewState = "progress" | "completed";
 
@@ -22,6 +23,10 @@ export default function Home() {
     setInputValue("");
   };
 
+  const updateTodoAction = async (todo: Todo) => {
+    await updateTodo(todo);
+  };
+
   useEffect(() => {
     setIsDisabled(inputValue === "");
   }, [inputValue]);
@@ -30,10 +35,8 @@ export default function Home() {
     const unsubscribe = firestore
       .collection("todos")
       .onSnapshot(async (snapshot) => {
-        const newTodos: Todo[] = snapshot.docs
-          .map((doc) => doc.data())
-          .map((data) => {
-            return {
+        const newTodos: Todo[] = snapshot.docs.map((doc) => {
+          return {
             id: doc.id,
             title: doc.data().title,
             description: doc.data().description,
@@ -86,12 +89,7 @@ export default function Home() {
                 title={todo.title}
                 completed={todo.completed}
                 handleComplete={() => {
-                  const newTodos = todos.map((todoItem, todoIndex) =>
-                    todoIndex === index
-                      ? { ...todoItem, completed: true }
-                      : todoItem
-                  );
-                  setTodos(newTodos);
+                  updateTodoAction({ ...todo, completed: true });
                 }}
                 hidden={
                   viewState === "progress" ? todo.completed : !todo.completed
