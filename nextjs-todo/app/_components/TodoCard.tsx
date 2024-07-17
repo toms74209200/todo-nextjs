@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { MouseEvent, useCallback, useState } from "react";
 
 type TodoCardProps = {
@@ -6,6 +7,7 @@ type TodoCardProps = {
   deadline?: Date;
   completed?: boolean;
   handleComplete?: () => void;
+  handleTrash?: () => void;
   hidden?: boolean;
 };
 
@@ -13,6 +15,7 @@ export const TodoCard = ({
   title,
   completed,
   handleComplete,
+  handleTrash,
   hidden,
 }: TodoCardProps) => {
   const [startX, setStartX] = useState(0);
@@ -60,15 +63,23 @@ export const TodoCard = ({
     >
       <div className="flex flex-row justify-between items-center">
         <h3 className="font-bold">{title}</h3>
-        <button
-          className={
-            "p-1 text-slate-100 hover:text-black " +
-            `${completed ? "hidden" : ""}`
-          }
-          onClick={handleComplete}
-        >
-          ✔
-        </button>
+        <div>
+          <button
+            className={
+              "p-1 text-slate-100 hover:text-black " +
+              `${completed ? "hidden" : ""}`
+            }
+            onClick={handleComplete}
+          >
+            ✔
+          </button>
+          <button
+            className="p-1 text-slate-100 hover:text-red-500"
+            onClick={handleTrash}
+          >
+            <Icon icon="mdi:trash-can-outline" />
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { Todo } from "@/app/_models/Todo";
 import { insertTodo } from "@/app/_models/insertTodo";
 import { FirestoreContext } from "@/app/_components/FirestoreProvider";
 import { updateTodo } from "@/app/_models/updateTodo";
+import { deleteTodo } from "./_models/deleteTodo";
 
 type ListViewState = "progress" | "completed";
 
@@ -25,6 +26,10 @@ export default function Home() {
 
   const updateTodoAction = async (todo: Todo) => {
     await updateTodo(todo);
+  };
+
+  const deleteTodoAction = async (id: string) => {
+    await deleteTodo(id);
   };
 
   useEffect(() => {
@@ -90,6 +95,9 @@ export default function Home() {
                 completed={todo.completed}
                 handleComplete={() => {
                   updateTodoAction({ ...todo, completed: true });
+                }}
+                handleTrash={() => {
+                  deleteTodoAction(todo.id!);
                 }}
                 hidden={
                   viewState === "progress" ? todo.completed : !todo.completed
