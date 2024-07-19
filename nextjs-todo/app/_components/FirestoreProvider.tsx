@@ -1,16 +1,12 @@
 "use client";
-import firebase from "firebase/compat/app";
 import { createContext, ReactNode, useEffect, useMemo, useState } from "react";
-import { getFirestoreClient } from "@/app/_models/getFirestoreClient";
+import { getFirestoreClient } from "@/app/_models/loadFirebase";
+import { Firestore } from "firebase/firestore";
 
-export const FirestoreContext = createContext<firebase.firestore.Firestore>(
-  getFirestoreClient()
-);
+export const FirestoreContext = createContext<Firestore>(getFirestoreClient());
 
 const useFirestore = () => {
-  const [firestore, setFirestore] = useState<firebase.firestore.Firestore>(
-    getFirestoreClient()
-  );
+  const [firestore, setFirestore] = useState<Firestore>(getFirestoreClient());
 
   useEffect(() => {
     setFirestore(getFirestoreClient());

@@ -6,6 +6,8 @@ import { insertTodo } from "@/app/_models/insertTodo";
 import { FirestoreContext } from "@/app/_components/FirestoreProvider";
 import { updateTodo } from "@/app/_models/updateTodo";
 import { deleteTodo } from "./_models/deleteTodo";
+import { signInAnonymously } from "firebase/auth";
+import { collection, onSnapshot } from "firebase/firestore";
 
 type ListViewState = "progress" | "completed";
 
@@ -37,9 +39,23 @@ export default function Home() {
   }, [inputValue]);
 
   useEffect(() => {
-    const unsubscribe = firestore
-      .collection("todos")
-      .onSnapshot(async (snapshot) => {
+    signInAnonymously(auth);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log("User is signed in");
+      } else {
+        console.log("User is signed out");
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, [auth]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(firestore, "todos"),
+      async (snapshot) => {
         const newTodos: Todo[] = snapshot.docs.map((doc) => {
           return {
             id: doc.id,
