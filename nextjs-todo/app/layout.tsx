@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { FirestoreProvider } from "./_components/FirestoreProvider";
+import { FirebaseAuthProvider } from "./_components/FirebaseAuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,9 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <FirestoreProvider>
-        <body className={inter.className}>{children}</body>
-      </FirestoreProvider>
+      <FirebaseAuthProvider>
+        <FirestoreProvider>
+          <body className={inter.className}>{children}</body>
+        </FirestoreProvider>
+      </FirebaseAuthProvider>
     </html>
   );
 }

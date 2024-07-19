@@ -3,16 +3,19 @@ import { useContext, useEffect, useState } from "react";
 import { TodoCard } from "@/app/_components/TodoCard";
 import { Todo } from "@/app/_models/Todo";
 import { insertTodo } from "@/app/_models/insertTodo";
+import { FirebaseAuthContext } from "@/app/_components/FirebaseAuthProvider";
 import { FirestoreContext } from "@/app/_components/FirestoreProvider";
 import { updateTodo } from "@/app/_models/updateTodo";
 import { deleteTodo } from "./_models/deleteTodo";
-import { signInAnonymously } from "firebase/auth";
+import { signInAnonymously, User } from "firebase/auth";
 import { collection, onSnapshot } from "firebase/firestore";
 
 type ListViewState = "progress" | "completed";
 
 export default function Home() {
+  const auth = useContext(FirebaseAuthContext);
   const firestore = useContext(FirestoreContext);
+  const [user, setUser] = useState<User | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [viewState, setViewState] = useState<ListViewState>("progress");
   const [inputValue, setInputValue] = useState("");
@@ -41,11 +44,7 @@ export default function Home() {
   useEffect(() => {
     signInAnonymously(auth);
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        console.log("User is signed in");
-      } else {
-        console.log("User is signed out");
-      }
+      setUser(user);
     });
     return () => {
       unsubscribe();
@@ -66,7 +65,8 @@ export default function Home() {
           };
         });
         setTodos(newTodos);
-      });
+      }
+    );
     return () => {
       unsubscribe();
     };
