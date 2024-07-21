@@ -21,20 +21,17 @@ export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
 
-  const instertTodoAction = async () => {
-    await insertTodo({
-      title: inputValue,
-      completed: false,
-    });
+  const instertTodoAction = async (uid: string, todo: Todo) => {
+    await insertTodo(uid, todo);
     setInputValue("");
   };
 
-  const updateTodoAction = async (todo: Todo) => {
-    await updateTodo(todo);
+  const updateTodoAction = async (uid: string, todo: Todo) => {
+    await updateTodo(uid, todo);
   };
 
-  const deleteTodoAction = async (id: string) => {
-    await deleteTodo(id);
+  const deleteTodoAction = async (uid: string, id: string) => {
+    await deleteTodo(uid, id);
   };
 
   useEffect(() => {
@@ -52,8 +49,10 @@ export default function Home() {
   }, [auth]);
 
   useEffect(() => {
+    if (user === null) return;
+    console.log(`onSnapshot: users/${user.uid}/todos`);
     const unsubscribe = onSnapshot(
-      collection(firestore, "todos"),
+      collection(firestore, "users", `${user.uid}`, "todos"),
       async (snapshot) => {
         const newTodos: Todo[] = snapshot.docs.map((doc) => {
           return {
@@ -70,7 +69,7 @@ export default function Home() {
     return () => {
       unsubscribe();
     };
-  }, [firestore]);
+  }, [firestore, user]);
 
   return (
     <main className="flex justify-center w-screen h-screen">
@@ -110,10 +109,10 @@ export default function Home() {
                 title={todo.title}
                 completed={todo.completed}
                 handleComplete={() => {
-                  updateTodoAction({ ...todo, completed: true });
+                  updateTodoAction(user!.uid, { ...todo, completed: true });
                 }}
                 handleTrash={() => {
-                  deleteTodoAction(todo.id!);
+                  deleteTodoAction(user!.uid, todo.id!);
                 }}
                 hidden={
                   viewState === "progress" ? todo.completed : !todo.completed
@@ -123,7 +122,15 @@ export default function Home() {
           ))}
         </ul>
 
-        <form className="flex flex-row m-4" action={instertTodoAction}>
+        <form
+          className="flex flex-row m-4"
+          action={() =>
+            instertTodoAction(user!.uid, {
+              title: inputValue,
+              completed: false,
+            })
+          }
+        >
           <input
             type="text"
             className={"border rounded px-2 bg-slate-50 focus:bg-white"}

@@ -2,10 +2,12 @@
 
 import { getFirestoreAdmin } from "@/app/_models/getFirestoreAdmin";
 
-export const deleteTodo = async (id: string) => {
+export const deleteTodo = async (uid: string, id: string) => {
   const firestore = await getFirestoreAdmin();
 
   await firestore
+    .collection("users")
+    .doc(uid)
     .collection("todos")
     .doc(id)
     .delete()
