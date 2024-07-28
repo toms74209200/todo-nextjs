@@ -1,6 +1,6 @@
 "use server";
 
-import { getFirestoreAdmin } from "@/app/_models/getFirestoreAdmin";
+import { getFirestoreAdmin } from "@/app/_models/loadFirebaseAdmin";
 
 export const deleteTodo = async (uid: string, id: string) => {
   const firestore = await getFirestoreAdmin();

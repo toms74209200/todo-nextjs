@@ -1,6 +1,6 @@
 "use server";
 
-import { getFirestoreAdmin } from "@/app/_models/getFirestoreAdmin";
+import { getFirestoreAdmin } from "@/app/_models/loadFirebaseAdmin";
 import { Todo } from "@/app/_models/Todo";
 
 export const updateTodo = async (uid: string, todo: Todo) => {
