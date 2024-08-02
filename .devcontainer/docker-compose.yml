@@ -8,6 +8,7 @@ services:
     environment:
       - TZ=Asia/Tokyo
       - FIRESTORE_EMULATOR_HOST=firestore:8080
+      - FIREBASE_AUTH_EMULATOR_HOST=firestore:9099
 
   firestore:
     image: motomotomato/firestore-emulator

@@ -1,8 +1,13 @@
 "use server";
 
 import { getFirestoreAdmin } from "@/app/_models/loadFirebaseAdmin";
+import { isAuthorized } from "@/app/_models/isAuthorized";
 
-export const deleteTodo = async (uid: string, id: string) => {
+export const deleteTodo = async (idToken: string, uid: string, id: string) => {
+  if (!(await isAuthorized(idToken, uid))) {
+    return;
+  }
+
   const firestore = await getFirestoreAdmin();
 
   await firestore

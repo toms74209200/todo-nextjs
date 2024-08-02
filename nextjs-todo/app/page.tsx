@@ -16,22 +16,27 @@ export default function Home() {
   const auth = useContext(FirebaseAuthContext);
   const firestore = useContext(FirestoreContext);
   const [user, setUser] = useState<User | null>(null);
+  const [idToken, setIdToken] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [viewState, setViewState] = useState<ListViewState>("progress");
   const [inputValue, setInputValue] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
 
-  const instertTodoAction = async (uid: string, todo: Todo) => {
-    await insertTodo(uid, todo);
+  const instertTodoAction = async (
+    idToken: string,
+    uid: string,
+    todo: Todo
+  ) => {
+    await insertTodo(idToken, uid, todo);
     setInputValue("");
   };
 
-  const updateTodoAction = async (uid: string, todo: Todo) => {
-    await updateTodo(uid, todo);
+  const updateTodoAction = async (idToken: string, uid: string, todo: Todo) => {
+    await updateTodo(idToken, uid, todo);
   };
 
-  const deleteTodoAction = async (uid: string, id: string) => {
-    await deleteTodo(uid, id);
+  const deleteTodoAction = async (idToken: string, uid: string, id: string) => {
+    await deleteTodo(idToken, uid, id);
   };
 
   useEffect(() => {
@@ -49,8 +54,21 @@ export default function Home() {
   }, [auth]);
 
   useEffect(() => {
+    (async () => {
+      if (user === null) {
+        console.log("user is null");
+        return;
+      }
+      const newIdToken = await user.getIdToken(true).catch((error) => {
+        console.log(error);
+        return null;
+      });
+      newIdToken && setIdToken(newIdToken);
+    })();
+  }, [user]);
+
+  useEffect(() => {
     if (user === null) return;
-    console.log(`onSnapshot: users/${user.uid}/todos`);
     const unsubscribe = onSnapshot(
       collection(firestore, "users", `${user.uid}`, "todos"),
       async (snapshot) => {
@@ -109,10 +127,13 @@ export default function Home() {
                 title={todo.title}
                 completed={todo.completed}
                 handleComplete={() => {
-                  updateTodoAction(user!.uid, { ...todo, completed: true });
+                  updateTodoAction(idToken!, user!.uid, {
+                    ...todo,
+                    completed: true,
+                  });
                 }}
                 handleTrash={() => {
-                  deleteTodoAction(user!.uid, todo.id!);
+                  deleteTodoAction(idToken!, user!.uid, todo.id!);
                 }}
                 hidden={
                   viewState === "progress" ? todo.completed : !todo.completed
@@ -124,12 +145,13 @@ export default function Home() {
 
         <form
           className="flex flex-row m-4"
-          action={() =>
-            instertTodoAction(user!.uid, {
+          action={() => {
+            console.log(`${idToken}, ${user!.uid}`);
+            instertTodoAction(idToken!, user!.uid, {
               title: inputValue,
               completed: false,
-            })
-          }
+            });
+          }}
         >
           <input
             type="text"

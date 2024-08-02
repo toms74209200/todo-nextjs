@@ -2,8 +2,13 @@
 
 import { getFirestoreAdmin } from "@/app/_models/loadFirebaseAdmin";
 import { Todo } from "@/app/_models/Todo";
+import { isAuthorized } from "@/app/_models/isAuthorized";
 
-export const updateTodo = async (uid: string, todo: Todo) => {
+export const updateTodo = async (idToken: string, uid: string, todo: Todo) => {
+  if (!(await isAuthorized(idToken, uid))) {
+    return;
+  }
+
   const firestore = await getFirestoreAdmin();
 
   await firestore
