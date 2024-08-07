@@ -23,7 +23,7 @@ describe("Test for insertTodo", () => {
   test("success", async () => {
     const fetchFirestoreResult = await fetch(`http://${FIREBSE_DOMAIN}:8080`);
     expect(fetchFirestoreResult.ok).toBe(true);
-    const fetchResult = await fetch(`http://127.0.0.1:9099`);
+    const fetchResult = await fetch(`http://${FIREBSE_DOMAIN}:9099`);
     expect((await fetchResult.json()).authEmulator.ready).toBe(true);
 
     const userCredential = await signInAnonymously(authClient);
