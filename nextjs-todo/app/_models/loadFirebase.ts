@@ -15,10 +15,10 @@ initializeApp({
 const firestore = getFirestore();
 const auth = getAuth();
 
-// if (ENV === "dev") {
-connectFirestoreEmulator(firestore, FIREBSE_DOMAIN, Number(FIRESTORE_PORT));
-connectAuthEmulator(auth, `http://${FIREBSE_DOMAIN}:${FIREBASE_AUTH_PORT}`);
-// }
+if (ENV === "dev") {
+  connectFirestoreEmulator(firestore, FIREBSE_DOMAIN, Number(FIRESTORE_PORT));
+  connectAuthEmulator(auth, `http://${FIREBSE_DOMAIN}:${FIREBASE_AUTH_PORT}`);
+}
 
 export const getFirestoreClient = () => {
   return firestore;
