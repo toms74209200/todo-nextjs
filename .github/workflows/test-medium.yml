@@ -25,7 +25,7 @@ jobs:
       - name: Test
         id: test
         working-directory: nextjs-todo
-        run: bun run test:medium
+        run: npm run test:medium
         env:
           FIREBASE_DOMAIN: localhost
           FIRESTORE_PORT: 8080
