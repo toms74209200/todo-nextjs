@@ -9,7 +9,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "bun x prettier --write .",
+    "format:check": "bun x prettier --check ."
   },
   "dependencies": {
     "@iconify/react": "^5.0.1",
