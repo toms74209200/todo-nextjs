@@ -18,7 +18,7 @@ jobs:
         run: sudo chown 1000:1000 -R .
       - name: Launch Firestore
         working-directory: .devcontainer
-        run: docker compose up -d firestore
+        run: docker compose up firestore
       - name: Install dependencies
         working-directory: nextjs-todo
         run: bun install
