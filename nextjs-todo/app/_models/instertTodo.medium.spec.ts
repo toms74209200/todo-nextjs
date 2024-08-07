@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { insertTodo } from "./insertTodo";
 import { getFirestoreAdmin } from "./loadFirebaseAdmin";
 import { getFirebaseAuth } from "./loadFirebase";

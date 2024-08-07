@@ -23,7 +23,7 @@
 				"oven.bun-vscode",
 				"bradlc.vscode-tailwindcss",
 				"esbenp.prettier-vscode",
-				"Orta.vscode-jest"
+				"vitest.explorer"
 			]
 		}
 	},
