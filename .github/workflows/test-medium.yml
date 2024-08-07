@@ -30,4 +30,5 @@ jobs:
           FIREBASE_DOMAIN: localhost
           FIRESTORE_PORT: 8080
           FIREBASE_AUTH_PORT: 9099
+          NEXT_PUBLIC_ENV: dev
           ENV: ci
