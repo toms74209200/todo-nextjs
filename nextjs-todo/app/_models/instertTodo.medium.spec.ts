@@ -21,10 +21,6 @@ describe("Test for insertTodo", () => {
   });
 
   test("success", async () => {
-    expect((await fetch(`http://${FIREBSE_DOMAIN}:8080`)).statusText).toEqual(
-      "OK"
-    );
-
     const userCredential = await signInAnonymously(authClient);
     const idToken = await getIdToken(userCredential.user);
 
