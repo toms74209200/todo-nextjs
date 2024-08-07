@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test:small": "vitest run --config vite.small.config.js",
-    "test:medium": "vitest run --config vite.medium.config.js",
+    "test": "vitest run --silent",
+    "test:small": "vitest run --silent --config vite.small.config.js",
+    "test:medium": "vitest run --silent --config vite.medium.config.js",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

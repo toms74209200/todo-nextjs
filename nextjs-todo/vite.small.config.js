@@ -5,8 +5,6 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     include: "**/*.small.{test,spec}.?(c|m)[jt]s?(x)",
-    env: {
-      FIREBASE_DOMAIN: "firestore",
-    },
+    globalSetup: ["./test/setup.ts"],
   },
 });

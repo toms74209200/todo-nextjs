@@ -4,7 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
-    include: "**/*.medium.{test,spec}.?(c|m)[jt]s?(x)",
+    include: "**/*.{test,spec}.?(c|m)[jt]s?(x)",
     globalSetup: ["./test/setup.ts"],
   },
 });
