@@ -1,0 +1,38 @@
+name: Test of medium size runs flaky
+
+on:
+  workflow_call:
+
+jobs:
+  test-medium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: oven-sh/setup-bun@v2
+      - name: Set user
+        working-directory: firestore
+        run: sudo chown 1000:1000 -R .
+      - name: Launch Firestore
+        working-directory: .devcontainer
+        run: docker compose up -d firestore
+      - name: Install dependencies
+        working-directory: nextjs-todo
+        run: bun install
+      - name: Wait for Firestore to start
+        run: ./wait-for-it.sh localhost:9099
+      - name: Test
+        id: test
+        working-directory: nextjs-todo
+        run: npm run test:medium
+        env:
+          FIRESTORE_EMULATOR_HOST: localhost:8080
+          FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
+          FIREBASE_DOMAIN: localhost
+          FIRESTORE_PORT: 8080
+          FIREBASE_AUTH_PORT: 9099
+          NEXT_PUBLIC_ENV: dev
+          ENV: ci

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { insertTodo } from "./insertTodo";
 import { getFirestoreAdmin } from "./loadFirebaseAdmin";
-import { getFirebaseAuth } from "./loadFirebase";
+import { FIREBSE_DOMAIN, getFirebaseAuth } from "./loadFirebase";
 import { getIdToken, signInAnonymously } from "firebase/auth";
 import { Firestore } from "firebase-admin/firestore";
 
@@ -15,7 +15,7 @@ describe("Test for insertTodo", () => {
 
   afterAll(async () => {
     await fetch(
-      `http://firestore:8080/emulator/v1/projects/nextjs-todo/databases/(default)/documents`,
+      `http://${FIREBSE_DOMAIN}:8080/emulator/v1/projects/nextjs-todo/databases/(default)/documents`,
       { method: "DELETE" }
     );
   });
