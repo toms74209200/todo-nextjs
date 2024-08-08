@@ -19,6 +19,8 @@ jobs:
       - name: Launch Firestore
         working-directory: .devcontainer
         run: docker compose up -d firestore
+      - name: Wait for Firestore to start
+        run: ./wait-for-it.sh localhost:9099
       - name: Install dependencies
         working-directory: nextjs-todo
         run: bun install
