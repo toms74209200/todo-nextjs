@@ -6,6 +6,6 @@ export default defineConfig({
   test: {
     include: "**/*.{test,spec}.?(c|m)[jt]s?(x)",
     globalSetup: ["./test/setup.ts"],
-    reporters: process.env.ENV ? ['verbose', 'github-actions'] : ['verbose'],
+    reporters: process.env.ENV ? ["verbose", "github-actions"] : ["verbose"],
   },
 });
