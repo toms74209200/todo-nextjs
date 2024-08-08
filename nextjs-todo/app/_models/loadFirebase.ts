@@ -3,7 +3,7 @@ import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 
 const ENV = process.env.NEXT_PUBLIC_ENV || "dev";
-const FIREBSE_DOMAIN = process.env.FIREBASE_DOMAIN || "localhost";
+export const FIREBSE_DOMAIN = process.env.FIREBASE_DOMAIN || "localhost";
 const FIRESTORE_PORT = process.env.FIRESTORE_PORT || "8080";
 const FIREBASE_AUTH_PORT = process.env.FIREBASE_AUTH_PORT || "9099";
 
