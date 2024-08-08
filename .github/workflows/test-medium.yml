@@ -19,16 +19,18 @@ jobs:
       - name: Launch Firestore
         working-directory: .devcontainer
         run: docker compose up -d firestore
-      - name: Wait for Firestore to start
-        run: ./wait-for-it.sh localhost:9099
       - name: Install dependencies
         working-directory: nextjs-todo
         run: bun install
+      - name: Wait for Firestore to start
+        run: ./wait-for-it.sh localhost:9099
       - name: Test
         id: test
         working-directory: nextjs-todo
         run: npm run test:medium
         env:
+          FIRESTORE_EMULATOR_HOST: localhost:8080
+          FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
           FIREBASE_DOMAIN: localhost
           FIRESTORE_PORT: 8080
           FIREBASE_AUTH_PORT: 9099
