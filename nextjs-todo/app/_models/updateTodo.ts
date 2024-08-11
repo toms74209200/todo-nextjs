@@ -3,21 +3,41 @@
 import { getFirestoreAdmin } from "@/app/_models/loadFirebaseAdmin";
 import { Todo } from "@/app/_models/Todo";
 import { isAuthorized } from "@/app/_models/isAuthorized";
+import { TodoError } from "./TodoError";
 
-export const updateTodo = async (idToken: string, uid: string, todo: Todo) => {
+export const updateTodo = async (
+  idToken: string,
+  uid: string,
+  todo: Todo
+): Promise<Error | null> => {
   if (!(await isAuthorized(idToken, uid))) {
-    return;
+    return { reason: "Unauthorized" } as TodoError;
   }
 
   const firestore = await getFirestoreAdmin();
 
-  await firestore
+  const selectResult = await firestore
+    .collection("users")
+    .doc(uid)
+    .collection("todos")
+    .doc(todo.id!)
+    .get();
+  if (!selectResult.exists) {
+    return { reason: "Not Found" } as TodoError;
+  }
+
+  const result = await firestore
     .collection("users")
     .doc(uid)
     .collection("todos")
     .doc(todo.id!)
     .set(todo)
     .catch((error) => {
-      console.error("Error updating document: ", error);
+      return error;
     });
+
+  if (result instanceof Error) {
+    return result;
+  }
+  return null;
 };

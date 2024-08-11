@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
-import { insertTodo } from "./insertTodo";
+import { deleteTodo } from "./deleteTodo";
 import { getFirestoreAdmin } from "./loadFirebaseAdmin";
 import { FIREBSE_DOMAIN, getFirebaseAuth } from "./loadFirebase";
 import {
@@ -12,7 +12,7 @@ import { Firestore } from "firebase-admin/firestore";
 const authClient = getFirebaseAuth();
 let firestoreAdmin: Firestore;
 
-describe("Test for insertTodo", () => {
+describe("Test for deleteTodo", () => {
   beforeAll(async () => {
     firestoreAdmin = await getFirestoreAdmin();
   });
@@ -32,16 +32,19 @@ describe("Test for insertTodo", () => {
 
   test("success", async () => {
     const userCredential = await signInAnonymously(authClient);
+
+    const docRef = await firestoreAdmin
+      .collection("users")
+      .doc(userCredential.user.uid)
+      .collection("todos")
+      .add({
+        title: "test",
+        completed: false,
+      });
+
     const idToken = await getIdToken(userCredential.user);
 
-    const expected = {
-      title: "test",
-      completed: false,
-    };
-
-    const result = await insertTodo(idToken, userCredential.user.uid, expected);
-
-    expect(result).toBeNull();
+    await deleteTodo(idToken, userCredential.user.uid, docRef.id);
 
     const snapshot = await firestoreAdmin
       .collection("users")
@@ -49,15 +52,23 @@ describe("Test for insertTodo", () => {
       .collection("todos")
       .get();
     const todos = snapshot.docs.map((doc) => doc.data());
-    expect(todos).toEqual([expected]);
+    expect(todos).toEqual([]);
   });
 
   test("not authenticated user then authentication failed", async () => {
-    const result = await insertTodo("invalid", "invalid", {
-      title: "test",
-      completed: false,
-    });
+    const result = await deleteTodo("invalid", "invalid", "invalid");
+    expect(result).toBeTruthy();
+  });
 
+  test("data not found then failed", async () => {
+    const userCredential = await signInAnonymously(authClient);
+    const idToken = await getIdToken(userCredential.user);
+
+    const result = await deleteTodo(
+      idToken,
+      userCredential.user.uid,
+      "invalid"
+    );
     expect(result).toBeTruthy();
   });
 
@@ -71,11 +82,11 @@ describe("Test for insertTodo", () => {
 
     const idToken = await getIdToken(userCredential.user);
 
-    const result = await insertTodo(idToken, anotherUserCredential.user.uid, {
-      title: "test",
-      completed: false,
-    });
-
+    const result = await deleteTodo(
+      idToken,
+      anotherUserCredential.user.uid,
+      "invalid"
+    );
     expect(result).toBeTruthy();
   });
 });
