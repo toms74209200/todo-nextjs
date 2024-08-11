@@ -2,7 +2,7 @@ import { updateTodo } from "./updateTodo";
 import { getFirestoreAdmin } from "./loadFirebaseAdmin";
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
 import { Firestore } from "firebase-admin/firestore";
-import { getFirebaseAuth } from "./loadFirebase";
+import { FIREBSE_DOMAIN, getFirebaseAuth } from "./loadFirebase";
 import {
   createUserWithEmailAndPassword,
   getIdToken,
@@ -19,7 +19,7 @@ describe("Test for updateTodo", () => {
 
   afterEach(async () => {
     await fetch(
-      `http://firestore:8080/emulator/v1/projects/nextjs-todo/databases/(default)/documents`,
+      `http://${FIREBSE_DOMAIN}:8080/emulator/v1/projects/nextjs-todo/databases/(default)/documents`,
       { method: "DELETE" }
     );
   });
