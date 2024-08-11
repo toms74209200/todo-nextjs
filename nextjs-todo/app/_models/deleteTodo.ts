@@ -2,21 +2,31 @@
 
 import { getFirestoreAdmin } from "@/app/_models/loadFirebaseAdmin";
 import { isAuthorized } from "@/app/_models/isAuthorized";
+import { TodoError } from "./TodoError";
 
-export const deleteTodo = async (idToken: string, uid: string, id: string) => {
+export const deleteTodo = async (
+  idToken: string,
+  uid: string,
+  id: string
+): Promise<Error | null> => {
   if (!(await isAuthorized(idToken, uid))) {
-    return;
+    return { reason: "Unauthorized" } as TodoError;
   }
 
   const firestore = await getFirestoreAdmin();
 
-  await firestore
+  const result = await firestore
     .collection("users")
     .doc(uid)
     .collection("todos")
     .doc(id)
     .delete()
     .catch((error) => {
-      console.error("Error deleting document: ", error);
+      return error;
     });
+
+  if (result instanceof Error) {
+    return result;
+  }
+  return null;
 };
