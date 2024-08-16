@@ -15,6 +15,16 @@ export const deleteTodo = async (
 
   const firestore = await getFirestoreAdmin();
 
+  const selectResult = await firestore
+    .collection("users")
+    .doc(uid)
+    .collection("todos")
+    .doc(id)
+    .get();
+  if (!selectResult.exists) {
+    return { reason: "Not Found" } as TodoError;
+  }
+
   const result = await firestore
     .collection("users")
     .doc(uid)
