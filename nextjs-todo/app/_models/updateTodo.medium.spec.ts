@@ -18,6 +18,9 @@ describe("Test for updateTodo", { retry: 10 }, () => {
   });
 
   afterAll(async () => {
+    if (process.env.ENV === "ci") {
+      return;
+    }
     await fetch(
       `http://${FIREBSE_DOMAIN}:8080/emulator/v1/projects/nextjs-todo/databases/(default)/documents`,
       { method: "DELETE" }
