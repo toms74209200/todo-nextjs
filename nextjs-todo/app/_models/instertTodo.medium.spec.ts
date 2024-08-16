@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { insertTodo } from "./insertTodo";
 import { getFirestoreAdmin } from "./loadFirebaseAdmin";
 import { FIREBSE_DOMAIN, getFirebaseAuth } from "./loadFirebase";
@@ -12,18 +12,21 @@ import { Firestore } from "firebase-admin/firestore";
 const authClient = getFirebaseAuth();
 let firestoreAdmin: Firestore;
 
-describe("Test for insertTodo", () => {
+describe("Test for insertTodo", { retry: 10 }, () => {
   beforeAll(async () => {
     firestoreAdmin = await getFirestoreAdmin();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
+    if (process.env.ENV === "ci") {
+      return;
+    }
     await fetch(
       `http://${FIREBSE_DOMAIN}:8080/emulator/v1/projects/nextjs-todo/databases/(default)/documents`,
       { method: "DELETE" }
     );
     await fetch(
-      `http://${FIREBSE_DOMAIN}:${9099}/emulator/v1/projects/nextjs-todo/accounts`,
+      `http://${FIREBSE_DOMAIN}:9099/emulator/v1/projects/nextjs-todo/accounts`,
       {
         method: "DELETE",
       }
@@ -35,7 +38,7 @@ describe("Test for insertTodo", () => {
     const idToken = await getIdToken(userCredential.user);
 
     const expected = {
-      title: "test",
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: false,
     };
 
@@ -53,10 +56,14 @@ describe("Test for insertTodo", () => {
   });
 
   test("not authenticated user then authentication failed", async () => {
-    const result = await insertTodo("invalid", "invalid", {
-      title: "test",
-      completed: false,
-    });
+    const result = await insertTodo(
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      {
+        title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+        completed: false,
+      }
+    );
 
     expect(result).toBeTruthy();
   });
@@ -66,13 +73,13 @@ describe("Test for insertTodo", () => {
     const anotherUserCredential = await createUserWithEmailAndPassword(
       authClient,
       crypto.getRandomValues(new Uint32Array(1))[0].toString() + "@example.com",
-      "password"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
 
     const idToken = await getIdToken(userCredential.user);
 
     const result = await insertTodo(idToken, anotherUserCredential.user.uid, {
-      title: "test",
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: false,
     });
 

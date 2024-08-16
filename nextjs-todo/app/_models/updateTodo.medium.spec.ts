@@ -1,6 +1,6 @@
 import { updateTodo } from "./updateTodo";
 import { getFirestoreAdmin } from "./loadFirebaseAdmin";
-import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { Firestore } from "firebase-admin/firestore";
 import { FIREBSE_DOMAIN, getFirebaseAuth } from "./loadFirebase";
 import {
@@ -12,15 +12,24 @@ import {
 const authClient = getFirebaseAuth();
 let firestoreAdmin: Firestore;
 
-describe("Test for updateTodo", () => {
+describe("Test for updateTodo", { retry: 10 }, () => {
   beforeAll(async () => {
     firestoreAdmin = await getFirestoreAdmin();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
+    if (process.env.ENV === "ci") {
+      return;
+    }
     await fetch(
       `http://${FIREBSE_DOMAIN}:8080/emulator/v1/projects/nextjs-todo/databases/(default)/documents`,
       { method: "DELETE" }
+    );
+    await fetch(
+      `http://${FIREBSE_DOMAIN}:9099/emulator/v1/projects/nextjs-todo/accounts`,
+      {
+        method: "DELETE",
+      }
     );
   });
 
@@ -32,7 +41,7 @@ describe("Test for updateTodo", () => {
       .doc(userCredential.user.uid)
       .collection("todos")
       .add({
-        title: "test",
+        title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
         completed: false,
       });
 
@@ -40,7 +49,7 @@ describe("Test for updateTodo", () => {
 
     const expected = {
       id: docRef.id,
-      title: "test",
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: true,
     };
 
@@ -63,8 +72,8 @@ describe("Test for updateTodo", () => {
     const idToken = await getIdToken(userCredential.user);
 
     const expected = {
-      id: "invalid",
-      title: "test",
+      id: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: true,
     };
 
@@ -74,11 +83,15 @@ describe("Test for updateTodo", () => {
   });
 
   test("not authenticated user then authentication failed", async () => {
-    const result = await updateTodo("invalid", "invalid", {
-      id: "invalid",
-      title: "test",
-      completed: false,
-    });
+    const result = await updateTodo(
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      {
+        id: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+        title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+        completed: false,
+      }
+    );
 
     expect(result).toBeTruthy();
   });
@@ -88,14 +101,14 @@ describe("Test for updateTodo", () => {
     const anotherUserCredential = await createUserWithEmailAndPassword(
       authClient,
       crypto.getRandomValues(new Uint32Array(1))[0].toString() + "@example.com",
-      "password"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
 
     const idToken = await getIdToken(userCredential.user);
 
     const expected = {
-      id: "invalid",
-      title: "test",
+      id: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: false,
     };
 

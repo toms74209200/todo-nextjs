@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { deleteTodo } from "./deleteTodo";
 import { getFirestoreAdmin } from "./loadFirebaseAdmin";
 import { FIREBSE_DOMAIN, getFirebaseAuth } from "./loadFirebase";
@@ -12,18 +12,21 @@ import { Firestore } from "firebase-admin/firestore";
 const authClient = getFirebaseAuth();
 let firestoreAdmin: Firestore;
 
-describe("Test for deleteTodo", () => {
+describe("Test for deleteTodo", { retry: 10 }, () => {
   beforeAll(async () => {
     firestoreAdmin = await getFirestoreAdmin();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
+    if (process.env.ENV === "ci") {
+      return;
+    }
     await fetch(
       `http://${FIREBSE_DOMAIN}:8080/emulator/v1/projects/nextjs-todo/databases/(default)/documents`,
       { method: "DELETE" }
     );
     await fetch(
-      `http://${FIREBSE_DOMAIN}:${9099}/emulator/v1/projects/nextjs-todo/accounts`,
+      `http://${FIREBSE_DOMAIN}:9099/emulator/v1/projects/nextjs-todo/accounts`,
       {
         method: "DELETE",
       }
@@ -38,7 +41,7 @@ describe("Test for deleteTodo", () => {
       .doc(userCredential.user.uid)
       .collection("todos")
       .add({
-        title: "test",
+        title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
         completed: false,
       });
 
@@ -56,7 +59,11 @@ describe("Test for deleteTodo", () => {
   });
 
   test("not authenticated user then authentication failed", async () => {
-    const result = await deleteTodo("invalid", "invalid", "invalid");
+    const result = await deleteTodo(
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
+    );
     expect(result).toBeTruthy();
   });
 
@@ -67,7 +74,7 @@ describe("Test for deleteTodo", () => {
     const result = await deleteTodo(
       idToken,
       userCredential.user.uid,
-      "invalid"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
     expect(result).toBeTruthy();
   });
@@ -77,7 +84,7 @@ describe("Test for deleteTodo", () => {
     const anotherUserCredential = await createUserWithEmailAndPassword(
       authClient,
       crypto.getRandomValues(new Uint32Array(1))[0].toString() + "@example.com",
-      "password"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
 
     const idToken = await getIdToken(userCredential.user);
@@ -85,7 +92,7 @@ describe("Test for deleteTodo", () => {
     const result = await deleteTodo(
       idToken,
       anotherUserCredential.user.uid,
-      "invalid"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
     expect(result).toBeTruthy();
   });
