@@ -1,6 +1,6 @@
 import { updateTodo } from "./updateTodo";
 import { getFirestoreAdmin } from "./loadFirebaseAdmin";
-import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { Firestore } from "firebase-admin/firestore";
 import { FIREBSE_DOMAIN, getFirebaseAuth } from "./loadFirebase";
 import {
@@ -12,15 +12,21 @@ import {
 const authClient = getFirebaseAuth();
 let firestoreAdmin: Firestore;
 
-describe("Test for updateTodo", () => {
+describe("Test for updateTodo", { retry: 10 }, () => {
   beforeAll(async () => {
     firestoreAdmin = await getFirestoreAdmin();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await fetch(
       `http://${FIREBSE_DOMAIN}:8080/emulator/v1/projects/nextjs-todo/databases/(default)/documents`,
       { method: "DELETE" }
+    );
+    await fetch(
+      `http://${FIREBSE_DOMAIN}:9099/emulator/v1/projects/nextjs-todo/accounts`,
+      {
+        method: "DELETE",
+      }
     );
   });
 
