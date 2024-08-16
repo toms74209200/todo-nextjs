@@ -41,7 +41,7 @@ describe("Test for updateTodo", { retry: 10 }, () => {
       .doc(userCredential.user.uid)
       .collection("todos")
       .add({
-        title: "test",
+        title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
         completed: false,
       });
 
@@ -49,7 +49,7 @@ describe("Test for updateTodo", { retry: 10 }, () => {
 
     const expected = {
       id: docRef.id,
-      title: "test",
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: true,
     };
 
@@ -72,8 +72,8 @@ describe("Test for updateTodo", { retry: 10 }, () => {
     const idToken = await getIdToken(userCredential.user);
 
     const expected = {
-      id: "invalid",
-      title: "test",
+      id: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: true,
     };
 
@@ -83,11 +83,15 @@ describe("Test for updateTodo", { retry: 10 }, () => {
   });
 
   test("not authenticated user then authentication failed", async () => {
-    const result = await updateTodo("invalid", "invalid", {
-      id: "invalid",
-      title: "test",
-      completed: false,
-    });
+    const result = await updateTodo(
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      {
+        id: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+        title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+        completed: false,
+      }
+    );
 
     expect(result).toBeTruthy();
   });
@@ -97,14 +101,14 @@ describe("Test for updateTodo", { retry: 10 }, () => {
     const anotherUserCredential = await createUserWithEmailAndPassword(
       authClient,
       crypto.getRandomValues(new Uint32Array(1))[0].toString() + "@example.com",
-      "password"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
 
     const idToken = await getIdToken(userCredential.user);
 
     const expected = {
-      id: "invalid",
-      title: "test",
+      id: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: false,
     };
 

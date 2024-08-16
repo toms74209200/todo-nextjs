@@ -41,7 +41,7 @@ describe("Test for deleteTodo", { retry: 10 }, () => {
       .doc(userCredential.user.uid)
       .collection("todos")
       .add({
-        title: "test",
+        title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
         completed: false,
       });
 
@@ -59,7 +59,11 @@ describe("Test for deleteTodo", { retry: 10 }, () => {
   });
 
   test("not authenticated user then authentication failed", async () => {
-    const result = await deleteTodo("invalid", "invalid", "invalid");
+    const result = await deleteTodo(
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
+    );
     expect(result).toBeTruthy();
   });
 
@@ -70,7 +74,7 @@ describe("Test for deleteTodo", { retry: 10 }, () => {
     const result = await deleteTodo(
       idToken,
       userCredential.user.uid,
-      "invalid"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
     expect(result).toBeTruthy();
   });
@@ -80,7 +84,7 @@ describe("Test for deleteTodo", { retry: 10 }, () => {
     const anotherUserCredential = await createUserWithEmailAndPassword(
       authClient,
       crypto.getRandomValues(new Uint32Array(1))[0].toString() + "@example.com",
-      "password"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
 
     const idToken = await getIdToken(userCredential.user);
@@ -88,7 +92,7 @@ describe("Test for deleteTodo", { retry: 10 }, () => {
     const result = await deleteTodo(
       idToken,
       anotherUserCredential.user.uid,
-      "invalid"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
     expect(result).toBeTruthy();
   });

@@ -38,7 +38,7 @@ describe("Test for insertTodo", { retry: 10 }, () => {
     const idToken = await getIdToken(userCredential.user);
 
     const expected = {
-      title: "test",
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: false,
     };
 
@@ -56,10 +56,14 @@ describe("Test for insertTodo", { retry: 10 }, () => {
   });
 
   test("not authenticated user then authentication failed", async () => {
-    const result = await insertTodo("invalid", "invalid", {
-      title: "test",
-      completed: false,
-    });
+    const result = await insertTodo(
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+      {
+        title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
+        completed: false,
+      }
+    );
 
     expect(result).toBeTruthy();
   });
@@ -69,13 +73,13 @@ describe("Test for insertTodo", { retry: 10 }, () => {
     const anotherUserCredential = await createUserWithEmailAndPassword(
       authClient,
       crypto.getRandomValues(new Uint32Array(1))[0].toString() + "@example.com",
-      "password"
+      crypto.getRandomValues(new Uint32Array(1))[0].toString()
     );
 
     const idToken = await getIdToken(userCredential.user);
 
     const result = await insertTodo(idToken, anotherUserCredential.user.uid, {
-      title: "test",
+      title: crypto.getRandomValues(new Uint32Array(1))[0].toString(),
       completed: false,
     });
 
